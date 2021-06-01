@@ -864,7 +864,7 @@ int main()
 
 
     // Let some time to the OS
-    delay(1);
+    delay(100);
   }
 
   return (0);
