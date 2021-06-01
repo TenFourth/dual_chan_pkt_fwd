@@ -231,18 +231,18 @@ char interface[6];     // Used to set the interface to communicate to the intern
 
 #define BUFLEN 2048  //Max length of buffer
 
-// Tx Power Register^M
-// Power Setting for Japan ARIB STD-T108^M
-// 20mW=13dBm^M
-// SX1276 RegPaConfig(0x09), Val=0x3f^M
-// bit 7 PaSelect = 0 select RFO^M
-// bit 6-4 MaxPower = 3 Pmax=10.8+0.6*3=12.6 < 13^M
-// bit 3-0 OutputPower = 0x0f Pout=Pmax-(15-0x0f)=12.6^M
-// SX1272 RegPaConfig(0x09), Val=0x0e^M
-// bit 7 PaSelect = 0 select RFO^M
-// bit 6-4 unused = 0^M
-// bit 3-0 OutputPower = 0xe Pout=-1 + OutputPower = -1 + 0x0e = 13dBm^M
-#define REG_PA_CFG 0x09^M
+// Tx Power Register
+// Power Setting for Japan ARIB STD-T108
+// 20mW=13dBm
+// SX1276 RegPaConfig(0x09), Val=0x3f
+// bit 7 PaSelect = 0 select RFO
+// bit 6-4 MaxPower = 3 Pmax=10.8+0.6*3=12.6 < 13
+// bit 3-0 OutputPower = 0x0f Pout=Pmax-(15-0x0f)=12.6
+// SX1272 RegPaConfig(0x09), Val=0x0e
+// bit 7 PaSelect = 0 select RFO
+// bit 6-4 unused = 0
+// bit 3-0 OutputPower = 0xe Pout=-1 + OutputPower = -1 + 0x0e = 13dBm
+#define REG_PA_CFG 0x09
 int PWR_JPN_1276 = 0x3f;
 int PWR_JPN_1272 = 0xe;
 
