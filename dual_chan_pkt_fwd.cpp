@@ -246,6 +246,7 @@ char interface[6];     // Used to set the interface to communicate to the intern
 int PWR_JPN_1276 = 0x3f;
 int PWR_JPN_1272 = 0xe;
 
+#define RETRY_SEND_TO 3
 
 #define PROTOCOL_VERSION  1
 #define PKT_PUSH_DATA 0
@@ -455,7 +456,7 @@ void SetupLoRa(byte CE)
 
 }
 
-void SolveHostname(const char* p_hostname, uint16_t port, struct sockaddr_in* p_sin)
+int SolveHostname(const char* p_hostname, uint16_t port, struct sockaddr_in* p_sin)
 {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -472,7 +473,7 @@ void SolveHostname(const char* p_hostname, uint16_t port, struct sockaddr_in* p_
   int error = getaddrinfo(p_hostname, service, &hints, &p_result);
   if (error != 0) {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
-      exit(EXIT_FAILURE);
+      return EXIT_FAILURE;
   }
 
   // Loop over all returned results
@@ -483,6 +484,22 @@ void SolveHostname(const char* p_hostname, uint16_t port, struct sockaddr_in* p_
   }
 
   freeaddrinfo(p_result);
+  return EXIT_SUCCESS;
+}
+
+void tryToSend(vector<Server_t>::iterator server, char *msg, int length) {
+  int i = RETRY_SEND_TO;
+
+  while (i > 0) {
+    const int ret = SolveHostname(server->address.c_str(), server->port, &si_other);
+    if (ret == EXIT_SUCCESS) {
+      if (sendto(s, (char *)msg, length, 0 , (struct sockaddr *) &si_other, slen) >= 0) {
+        break;
+      }
+    }
+    delay(3000);
+    i--;
+  }
 }
 
 void SendUdp(char *msg, int length)
@@ -490,11 +507,7 @@ void SendUdp(char *msg, int length)
   for (vector<Server_t>::iterator it = servers.begin(); it != servers.end(); ++it) {
     if (it->enabled) {
       si_other.sin_port = htons(it->port);
-
-      SolveHostname(it->address.c_str(), it->port, &si_other);
-      if (sendto(s, (char *)msg, length, 0 , (struct sockaddr *) &si_other, slen)==-1) {
-        Die("sendto()");
-      }
+      tryToSend(it, msg, length);
     }
   }
 }
