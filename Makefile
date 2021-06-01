@@ -17,7 +17,7 @@ base64.o: base64.c
 	$(CC) $(CFLAGS) base64.c
 
 clean:
-	rm *.o dual_chan_pkt_fwd
+	rm -f *.o dual_chan_pkt_fwd
 
 install:
 	sudo cp -f ./dual_chan_pkt_fwd /usr/bin/
